@@ -1,0 +1,27 @@
+{
+ "id": "keyscale",
+ "version": "0.5",
+ "title": "KEY SCALE",
+ "category": "Sequencer",
+ "license": "GPL-2.0-or-later",
+ "description": "A key track and a free 12-note scale remap. T9's note trigs set the key (note - 60, C5) and are silent; the key is added to the notes of the tracks with transpose on, then the scale table remaps each note's pitch class on the tracks with scale on. FUNC + TRIG opens stock Quantize; pressed again it opens the overlay (and again goes back to Quantize). On T9 the overlay is the scale editor: two drawn keyboards (inputs, and outputs showing unused and doubled notes, and a dot on the last note played through the scale); hold a trig key as the source and press another to set its output (trigs 9-16 white keys, 2 3 5 6 7 black), knobs A-H: C..G, UP/DOWN flip to page 2: A-D G#..B and E rotates the wrap note (where the remap window starts, C by default); on any other track it opens that track's SCALE / TRANSPOSE switches (knobs A, B) and its last fired note, in > out, with TRN / SCL lit when transpose or the scale moved it. NO closes. The key resets to 0 on stop. The table, wrap note and switches are saved (eMMC block 0x6004e).",
+ "device": "digitakt-mk1",
+ "os": "1.54",
+ "sources": ["keyscale.c"],
+ "cflags": [
+  "-Os",
+  "-DPATTERN_PP=0x4199ec38",
+  "-DTRANSPORT_AT=0x4199ec2c",
+  "-DSAVE_BLOCK=0x6004e"
+ ],
+ "subscribe": [
+  {"event": "ev_fire_step", "fn": "ks_step", "order": 50},
+  {"event": "ev_fire_notes", "fn": "ks_notes", "order": 70},
+  {"event": "ev_key", "fn": "ks_key", "order": 30},
+  {"event": "ev_enc", "fn": "ks_enc", "order": 30},
+  {"event": "ev_draw", "fn": "ks_draw", "order": 95},
+  {"event": "ev_tick", "fn": "ks_tick", "order": 50}
+ ],
+ "requires": ["core", "seq-events"],
+ "resources": {"core": "4.1", "names": ["emmc:0x6004e"]}
+}
