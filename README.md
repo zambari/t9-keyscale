@@ -3,12 +3,15 @@
 An [elekloader](https://elekloader.github.io/) mod for the **Digitakt mk1, OS 1.54**.
 
 - **Key track:** T9's note trigs set a key. C5 means no change. Every other note transposes the
-  tracks you pick by its distance from C5, and the key holds until T9 plays its next note. T9 itself
-  is silent.
+  tracks you pick by its distance from C5, and the key holds until T9 plays its next note. T9's notes
+  still go out as usual: to keep T9 quiet, set its SRC channel to something nothing listens on, or mute it
+  (a muted T9 still sets the key).
 - **Scale remap:** a free 12-note table. Each input note C..B goes to any output note, so you can snap
   to a scale, swap notes or fold a mode into another. It isn't limited to preset scales.
 - **Per track:** SCALE and TRANSPOSE can be turned on or off for each track. That covers the MIDI
   tracks T10–T16 and the audio tracks T1–T8 (on an audio track the note moves the sample's pitch).
+
+If you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can place trigs that will transpose notes on selected tracks (and outputted midi notes), with custom scales that can map any note to any note, so you can define where the notes should land, and generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical. 
 
 ![The scale editor with a G minor remap](docs/scale-editor.png)
 
@@ -17,9 +20,7 @@ keyboard. Remapped notes are striped, and the selected note (B) is inverted. OUT
 inputs land, with a count on notes that more than one input lands on. The arrow is the selected
 note's remap (B → A♯/B♭). The dot marks the last note played through the scale (E → E♭).*
 
-> **Status: experimental.** Tested only in the [digiemu](https://github.com/irpina/digiemu) emulator, not on a unit yet.
-> Keep the stock OS `.syx` and a way to reflash it. To get into the bootloader, hold FUNC at power-on,
-> then press TRIG 4.
+
 
 ## Opening it
 
@@ -40,6 +41,7 @@ What opens depends on the active track:
 |---|---|
 | knobs **A–H** | the output note of **C, C♯, D, D♯, E, F, F♯, G** (page 1) |
 | **UP / DOWN** (or **TRIG**) | flip to page 2: knobs **A–D** for **G♯, A, A♯, B**; knob **E** moves the wrap note |
+| knob **H** (page 2) | turn KEY SCALE **off** for all tracks (a bypass). The keyboards give way to an OFF screen; turn **H** up there to switch it back on |
 | trig keys | a keyboard in FUNC + TRK's layout (9–16 white keys, 2 3 5 6 7 black). **Hold a source note and press its new output** to set it. A tap only selects |
 | **LEFT / RIGHT** | move the selection |
 | **YES** | reset the selected note to itself |
@@ -52,6 +54,10 @@ The output can be the C an octave up (`C'`), so B → C' snaps B up to the next 
 ![The scale editor, page 2](docs/scale-editor-page2.png)
 
 *Page 2: knobs A–D for G♯..B, and E for the wrap note.*
+
+While KEY SCALE is off, every track plays its notes untouched, whatever its SCALE and TRANSPOSE
+switches say (the apply screens show `ALL OFF (T9 H)`). T9 still sets the key, so the key is right the
+moment you switch it back on. The on/off state is saved with the rest.
 
 ### The apply screen (on any other track)
 
@@ -90,7 +96,7 @@ remap (if SCALE is on) → clamp to 0–127. On MIDI tracks each chord tone is r
   same speed as the audio tracks, and ignores T9's trig conditions for that step. **With T9 at 1/4 or 1/8
   speed, audio targets can change key early**, up to one T9 step before it sounds. MIDI targets (T10–T16)
   follow T9 exactly at any speed.
-- The table, the wrap note and the per-track switches are global (not per pattern). They are saved
+- The table, the wrap note, the per-track switches and the on/off state are global (not per pattern). They are saved
   to the +Drive's eMMC **block 0x6004e** about a second after the last change, and loaded at boot. That
   block is empty on a fresh drive, but that the stock OS never writes it is assumed, not proven.
   The mod claims the block as `emmc:0x6004e`, so elekloader refuses a mod set where another mod
