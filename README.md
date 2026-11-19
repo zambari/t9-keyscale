@@ -1,31 +1,37 @@
-# KEY SCALE: a key track and a free scale remap for the Digitakt mk1
-
+# KeyScale: a key track and a free scale remap for the Digitakt mk1
 An [elekloader](https://elekloader.github.io/) mod for the **Digitakt mk1, OS 1.54**.
+
+Track 9 (first midi track) can be used to transpose other audio or midi tracks. A global freely adjustable scale is also aplied (both can be turned on and off per track). If you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can transpose your track or your outboard, while arbitrary scaling (not just presets or snaps) is applied to the result, to keep it harmonically fit your material. A note every bar is enough to make progressions from short static rhythms. Can be used as an arp. place trigs that will transpose notes on selected tracks (and outputted midi notes), with custom scales that can map any note to any note, so you can define where the notes should land, and generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical. 
+
+![The scale editor on device](docs/digitakt_scale.jpg)
+
+
 
 - **Key track:** T9's note trigs set a key. C5 means no change. Every other note transposes the
   tracks you pick by its distance from C5, and the key holds until T9 plays its next note. T9's notes
-  still go out as usual: to keep T9 quiet, set its SRC channel to something nothing listens on, or mute it
-  (a muted T9 still sets the key).
+  still go out as usual: to keep T9 quiet, set its SRC channel to something nothing listens on.
+  **Muting T9 holds the key**: while it's muted, its trigs don't change the key.
 - **Scale remap:** a free 12-note table. Each input note C..B goes to any output note, so you can snap
   to a scale, swap notes or fold a mode into another. It isn't limited to preset scales.
 - **Per track:** SCALE and TRANSPOSE can be turned on or off for each track. That covers the MIDI
   tracks T10–T16 and the audio tracks T1–T8 (on an audio track the note moves the sample's pitch).
 
-If you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can place trigs that will transpose notes on selected tracks (and outputted midi notes), with custom scales that can map any note to any note, so you can define where the notes should land, and generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical. 
 
-![The scale editor with a G minor remap](docs/scale-editor.png)
 
-*The scale editor with the notes snapped down onto G minor (G A B♭ C D E♭ F). IN is the input
-keyboard. Remapped notes are striped, and the selected note (B) is inverted. OUT shows where the
-inputs land, with a count on notes that more than one input lands on. The arrow is the selected
-note's remap (B → A♯/B♭). The dot marks the last note played through the scale (E → E♭).*
 
+![The scale editor](docs/scale-editor.png)
+
+A remapped note is underlined; the line is a pixel short on the side it moves away
+from (left when it goes up, right when it goes down). OUT shows where the
+inputs land, with a count on notes that more than one input lands on; a note nothing lands on
+has an X. The selected note's output is inverted, and the arrow is the selected
+note's remap i.e. (B → A♯/B♭). The dot marks the last note played through the scale.
 
 
 ## Opening it
 
 **FUNC + TRIG** opens stock **Quantize**, as usual. **Press FUNC + TRIG again** (with no other key in
-between) and KEY SCALE opens over it. Pressing FUNC + TRIG once more goes back to Quantize, so the two
+between) and KeyScale opens over it. Pressing FUNC + TRIG once more goes back to Quantize, so the two
 alternate. **NO** closes it, and any other key closes it and then does its usual job.
 
 What opens depends on the active track:
@@ -35,99 +41,57 @@ What opens depends on the active track:
 | **T9** (the key track) | the **scale editor** |
 | any other track | that track's **apply** screen: SCALE and TRANSPOSE on/off |
 
+### The apply screen (other tracks)
+
+The top row is the two switches, then the track: `SCALE [ON] TRANS [OFF]   T10`. They control whether a track is processed: turn knob **A** / **B**, or push it to flip. Flags are stored as T9 parameters. 
+
 ### The scale editor (on T9)
 
 | control | does |
 |---|---|
-| knobs **A–H** | the output note of **C, C♯, D, D♯, E, F, F♯, G** (page 1) |
-| **UP / DOWN** (or **TRIG**) | flip to page 2: knobs **A–D** for **G♯, A, A♯, B**; knob **E** moves the wrap note |
-| knob **H** (page 2) | turn KEY SCALE **off** for all tracks (a bypass). The keyboards give way to an OFF screen; turn **H** up there to switch it back on |
-| trig keys | a keyboard in FUNC + TRK's layout (9–16 white keys, 2 3 5 6 7 black). **Hold a source note and press its new output** to set it. A tap only selects |
+| knob **A** (page 1) | move the selection |
+| knob **B** (page 1) | the output of the selected note (pick the note with **A**, the trig keys or LEFT/RIGHT) |
+| knob **C** (page 1) | move the wrap note |
+| knob **D** (page 1) | turn KeyScale **off** for all tracks (a bypass). The keyboards and title bar disappear, leaving the knob hints (with **OFF** lit) and the page strip; turn **D** right (on any page) to switch it back on |
+| knobs **E–H** (page 1) | the output note of the last four keys (**G♯, A, A♯, B** with wrap C). A knob's first turn only selects its note, so a stray touch doesn't edit; keep turning to change it |
+| **DOWN** (or **TRIG**) / **UP** | the next / previous of three pages. Page 2: knobs **A–H** for the first eight keys (**C, C♯, D, D♯, E, F, F♯, G** with wrap C). Page 3: the slots (below) |
+| knob **push** | **unlock** a note for editing. Every note starts locked at power-on (knob **B**, the value under the cursor, is never locked); editing a locked one (with its own knob or the trig keys) shows `PRESS TO UNLOCK` at the left of the title bar instead. Push the note's own knob (this also selects it), or push **B** for the selected note. Notes stay unlocked until power-off. A double tap still resets a locked note |
+| trig keys | a keyboard in FUNC + TRK's layout (9–15 white keys, 2 3 5 6 7 black). **Hold a source note and press its new output** to set it. A tap only selects; a **double tap** resets that note to itself |
 | **LEFT / RIGHT** | move the selection |
-| **YES** | reset the selected note to itself |
-| **FUNC + YES** | reset the whole table |
+| **YES** | close the overlay, like NO (on page 3 it loads or saves the slot instead). FUNC + YES is left to stock's quick save |
 
-An output stays in its input's octave, in a window that runs from the **wrap note** up to the wrap
-note an octave above, both ends included (C to C by default, marked under OUT and shown as `W:`).
-The output can be the C an octave up (`C'`), so B → C' snaps B up to the next C instead of down.
+An output stays near its input, in a window that runs from the **wrap note** up to the wrap note
+an octave above. 
 
-![The scale editor, page 2](docs/scale-editor-page2.png)
 
-*Page 2: knobs A–D for G♯..B, and E for the wrap note.*
+#### Memory Slots (page 3)
 
-While KEY SCALE is off, every track plays its notes untouched, whatever its SCALE and TRANSPOSE
-switches say (the apply screens show `ALL OFF (T9 H)`). T9 still sets the key, so the key is right the
-moment you switch it back on. The on/off state is saved with the rest.
-
-### The apply screen (on any other track)
+Four user slots, **U1–U4**, and two read-only presets: **CMAJ** and **GMIN**. In the presets, every note
+outside the scale moves a semitone down onto it, with wrap C. A slot holds a table and its wrap
+note. Each row shows the slot's scale as 12 cells, C..B: a block for a note some input lands on,
+a dot for one nothing lands on. The wrap note is shown after the cells.
 
 | control | does |
 |---|---|
-| knob **A** | SCALE on/off for this track |
-| knob **B** | TRANSPOSE on/off for this track |
+| **UP / DOWN** | pick a slot. UP on the top slot goes back to page 2 |
+| **LEFT / RIGHT** | switch between **LOAD** and **SAVE** |
+| **YES** | load the slot into the live table, or save the live table into it (user slots only). The slot becomes the active one, and the editor goes back to page 1 |
 
-`LAST` shows the track's last fired note in and out. **TRN** and **SCL** light up when the transpose or
-the scale moved it. By default SCALE and TRANSPOSE are on for T10–T16 and off for T1–T8.
-
-## Using it
-
-1. Pick the scale on T9's editor: for example the G minor snap above, or a full table of your own.
-2. Turn SCALE and/or TRANSPOSE on for the tracks that should follow, MIDI (T10–T16) or audio
-   (T1–T8, say a bass).
-3. Put note trigs on **T9** for the harmonic progression: **C5 = the key as written**, D5 = up a
-   whole tone, A4 = down a minor third, and so on. Each note holds until T9's next one.
-
-T9 is meant to move slower than the rest. Set **T9's SCALE to 1/4 or 1/8** (per-track scale mode) so
-that one T9 step lasts a bar or two, and/or give **T9 a long length** (up to 64 steps). Then a short
-pattern on the other tracks plays through a long chord progression, and each track decides on its own
-whether it is transposed, scaled, both or neither. For example, transposed but not scaled gives
-parallel motion. Scaled but not transposed keeps a riff in key while a transposed bass moves.
-
-For every note of a target track, the order is: `note + key` (if TRANSPOSE is on) → the scale
-remap (if SCALE is on) → clamp to 0–127. On MIDI tracks each chord tone is remapped too.
+While KeyScale is off, every track plays its notes untouched, whatever its SCALE and TRANSPOSE
+switches say (the apply screens show `ALL OFF`). T9 still sets the key, so the key is right the
+moment you switch it back on.
 
 ### Details and limits
 
 - **Sequenced trigs only.** Live playing and MIDI in are not transposed or scaled.
 - The key goes back to 0 on stop. A chord on T9 uses its root.
-- Mutes don't stop the key: a muted T9 still sets it.
-- **Audio tracks and a slow T9:** audio tracks fire before T9 within a step. So that they don't lag one
-  step behind a key change, they read T9's *next* stored step ahead of time. That assumes T9 runs at the
-  same speed as the audio tracks, and ignores T9's trig conditions for that step. **With T9 at 1/4 or 1/8
-  speed, audio targets can change key early**, up to one T9 step before it sounds. MIDI targets (T10–T16)
-  follow T9 exactly at any speed.
-- The table, the wrap note, the per-track switches and the on/off state are global (not per pattern). They are saved
-  to the +Drive's eMMC **block 0x6004e** about a second after the last change, and loaded at boot. That
-  block is empty on a fresh drive, but that the stock OS never writes it is assumed, not proven.
-  The mod claims the block as `emmc:0x6004e`, so elekloader refuses a mod set where another mod
-  claims the same block.
+- **Muting T9 holds the key**  The current key stays in force and T9's trigs
+  are ignored until you unmute it. The overlay's title bar shows `HLD` in place of `KEY` while it holds.
+  Stopping still resets the key to 0, muted or not.
+-
 
-## Building
-
-Needs [elekloader](https://github.com/elekloader/elekloader) and an m68k cross GCC (see elekloader's
-docs). Requires **core ≥ 4.1** and **seq-events** (the DT1 one).
-
-```bash
-python3 -m elekloader.sdk.build path/to/keyscale --stock Digitakt_OS1.54.syx
-# -> path/to/keyscale/out/keyscale-<ver>.elemod
-```
-
-Load the `.elemod` into the [elekloader builder](https://elekloader.github.io/elekloader/) together with
-core and seq-events, or link locally:
-
-```bash
-python3 -m elekloader.patch --stock Digitakt_OS1.54.syx \
-    --mod mods/core/out/core-4.4-os1.54.elemod \
-    --mod mods/seq-events-dt1/out/seq-events-0.1-os1.54.elemod \
-    --mod path/to/keyscale/out/keyscale-<ver>.elemod \
-    --out keyscale.syx --version 1.5K
-```
-
-The README screenshots are digiemu `--check` snapshots of a build with `-DSHOT=1` (scale editor;
-`-DSHOT=2` is the apply screen) added to `cflags`. Those builds open the overlay at boot with the G minor table and never save. Don't ship them.
-
-No firmware is in this repo: not the stock OS, and not built `.syx` or `.elemod` files.
-
+If you are interested in feeding your agent more details see
+[devs.md](devs.md).
 ## License
 
 GPL-2.0-or-later. See [LICENSE](LICENSE).
