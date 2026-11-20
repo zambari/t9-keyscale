@@ -1,10 +1,12 @@
 # T9-KeyScale: a key track and a free scale remap for the Digitakt mk1
 An [elekloader](https://elekloader.github.io/) mod for the **Digitakt mk1, OS 1.54**.
 
-The name says the one rule you have to accept: **T9 is the key track**. Its notes drive the key, and this is fixed,
+
+Track 9 (first midi track) can be used to transpose other audio or midi tracks. A global freely adjustable scale is also applied (both can be turned on and off per track). If you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can transpose your track or your outboard, while arbitrary scaling (not just presets or snaps) is applied to the result, to keep it harmonically fitting your material. A note every bar is enough to make progressions from short static rhythms. Can be used as an arp. Place trigs that will transpose notes on selected tracks (and outputted midi notes), with custom scales that can map any note to any note, so you can define where the notes should land, and generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical. 
+
+ **T9 is the key track**. Its notes drive the key, and this is fixed,
 so plan your patterns around T9 not being a regular melodic track.
 
-Track 9 (first midi track) can be used to transpose other audio or midi tracks. A global freely adjustable scale is also applied (both can be turned on and off per track). If you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can transpose your track or your outboard, while arbitrary scaling (not just presets or snaps) is applied to the result, to keep it harmonically fit your material. A note every bar is enough to make progressions from short static rhythms. Can be used as an arp. place trigs that will transpose notes on selected tracks (and outputted midi notes), with custom scales that can map any note to any note, so you can define where the notes should land, and generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical. 
 
 ![The scale editor on device](docs/digitakt_scale.jpg)
 
@@ -22,7 +24,7 @@ Track 9 (first midi track) can be used to transpose other audio or midi tracks. 
 
 
 
-![The scale editor](docs/scale-editor.png)
+![The scale editor](docs/apply-page.png)
 
 A remapped note is underlined; the line is a pixel short on the side it moves away
 from (left when it goes up, right when it goes down). OUT shows where the
@@ -33,8 +35,8 @@ note's remap i.e. (B → A♯/B♭). The dot marks the last note played through 
 
 ## Opening it
 
-**FUNC + TRIG** opens stock **Quantize**, as usual. **Press FUNC + TRIG again** (with no other key in
-between) and T9-KeyScale opens over it. Pressing FUNC + TRIG once more goes back to Quantize, so the two
+**FUNC + TRIG** opens T9-KeyScale. **Press FUNC + TRIG again** and it closes and stock **Quantize**
+opens. Pressing FUNC + TRIG once more (with no other key in between) goes back to T9-KeyScale, so the two
 alternate. **NO** closes it, and any other key closes it and then does its usual job.
 
 What opens depends on the active track:
