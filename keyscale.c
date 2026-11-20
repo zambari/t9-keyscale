@@ -46,13 +46,13 @@
  *                 overlay, like NO. The note knobs follow the drawn order (from the wrap note; C..B by
  *                 default). Page 1: A moves the selection, B sets the selected note's output, C rotates the
  *                 wrap note, D turns KeyScale off (hinted right of OUT), E-H set the outputs of the last
- *                 four keys (G#..B) (bypass: the keyboards and title bar go, leaving the hints with OFF lit and the pages; D on any page turns it
+ *                 four keys (G#..B) (bypass: the keyboards and title bar go, leaving only D's hint, OFF lit, and the pages; going off locks every note again; D on any page turns it
  *                 back on, UP/DOWN/TRIG still flip pages, nothing else does anything). DOWN (or TRIG without FUNC) steps to the next page, UP to the one before, of three: page 2 is
  *                 A-H for the first eight keys (C..G). A knob's first turn only selects its note, unless it is already selected.
  *                 Every note starts locked at power-on: an edit of a locked note's output (its own knob or
  *                 a trig-key pair; B, the cursor's value, is never locked) does nothing and shows PRESS TO UNLOCK at the left of the title bar (over the slot name) for 40 UI ticks. Pushing
  *                 a note's knob unlocks (and selects) it, pushing B unlocks the selected note; it stays
- *                 unlocked until power-off. A double tap ignores the locks. FUNC + YES is left to stock (quick save) on every screen. A strip on the right
+ *                 unlocked until power-off or until KeyScale is turned off. A double tap ignores the locks. FUNC + YES is left to stock (quick save) on every screen. A strip on the right
  *                 shows the page between UP and DOWN arrows.
  *                 Page 3, the slots: four user slots U1-U4 and the presets CMAJ, GMIN (every other note a
  *                 semitone down onto the scale, wrap C), each a table and a wrap note. UP/DOWN pick one,
@@ -66,6 +66,9 @@
  *                 one row of toggles with the track's name on the right; under
  *                 it the semitones each moved the last note, then T9's status with a hint), kept in the pattern's kit
  *                 (T9's CC4-CC8 values).
+ * FUNC + trig N switches the overlay to track N (trig 9 the scale editor) without leaving it; the
+ * firmware's active track stays as it was (the DT1 SDK has no track select). While FUNC is held the
+ * editor's keyboard does nothing, and stock gets no FUNC + trig while the overlay is open.
  * NO closes it; any other key but FUNC closes it and then does what it does.
  *
  * Saving: the table, the wrap note, the on/off, the user slots and the active slot are kept in eMMC block SAVE_BLOCK (mod.json: 0x6004e, claimed as
@@ -382,6 +385,7 @@ static int32_t page;                        /* the scale editor's knob screen, 0
 static int32_t sel;                         /* the scale editor's selected input pitch class */
 static int32_t held = -1;                   /* the keyboard key held as the source, -1 none */
 static int32_t func_held, swallow_trig;
+static uint16_t trig_taken;                 /* bit n: trig key n's press went to a FUNC + trig switch */
 static int32_t quant_open;                  /* FUNC + TRIG went to stock (Quantize), no key since */
 #define PG_SLOTS 2                          /* page 3: the slots */
 static int32_t knob_acc[8];                 /* raw counts toward the next step, per knob */
@@ -633,6 +637,23 @@ int32_t ks_key(void *brain, void *ev)
         }
         return 0;
     }
+    if (k >= K_STEP1 && k < K_STEP1 + 16) {
+        uint16_t bit = (uint16_t)(1u << (k - K_STEP1));
+        if (trig_taken & bit) {             /* the rest of a press a FUNC + trig switch took */
+            if (!(fl & FL_DOWN))
+                trig_taken &= (uint16_t)~bit;
+            return 1;
+        }
+        if (open_t >= 0 && down && ((fl & FL_FUNC) || func_held)) {
+            int32_t t = (int32_t)(k - K_STEP1);     /* FUNC + trig: the overlay moves to that track */
+            trig_taken |= bit;
+            held = -1;
+            if (t == KEY_TRACK && open_t != KEY_TRACK)
+                set_page(0);
+            open_t = t;
+            return 1;
+        }
+    }
     if (open_t < 0)
         return 0;
     if (k == K_NO) {
@@ -707,6 +728,10 @@ int32_t ks_enc(void *brain, void *ev)
          * E-H are its last four keys, page 2's A-H its first eight */
         int32_t util = !page && k < 4, pc = (wrap + (page ? k : 4 + k)) % 12;
         if ((!page || bypass) && k == 3) { /* knob D (page 1, or any page while off): on/off */
+            if (d < 0 && !bypass) {         /* going off locks every note again */
+                unlocked = 0;
+                locked_msg = 0;
+            }
             bypass = d < 0;
             save_wait = 60;
         } else if (bypass) {
@@ -716,7 +741,8 @@ int32_t ks_enc(void *brain, void *ev)
         } else if (util && k == 0) {        /* page 1, A: the selection */
             sel = ((sel + d) % 12 + 12) % 12;
         } else if (util && k == 1) {        /* B: the selected note's output */
-            set_map(sel, clampi(map[sel] + d, 0, 11));  /* the cursor's value is never locked */
+            /* endless: rolls past B into C and on round the keyboard; never locked */
+            set_map(sel, ((map[sel] + d) % 12 + 12) % 12);
         } else if (util && k == 2) {        /* C: rotate the wrap note */
             wrap = (uint8_t)(((wrap + d) % 12 + 12) % 12);
             save_wait = 60;
@@ -901,12 +927,14 @@ static void draw_slots(void *bmp)
                  SLOT_NAMES[slot_sel]);
 }
 
-/* Page 1's utility knobs, right of OUT. D's OFF is lit while KeyScale is off. */
+/* Page 1's utility knobs, right of OUT. While KeyScale is off only D's OFF shows, lit: the others do nothing then. */
 static void draw_hints(void *bmp)
 {
-    fw_textf(bmp, fw_font5, HINT_X, 18, -1, "A SEL");
-    fw_textf(bmp, fw_font5, HINT_X, 12, -1, "B MAP");
-    fw_textf(bmp, fw_font5, HINT_X, 6, -1, "C WRP");
+    if (!bypass) {
+        fw_textf(bmp, fw_font5, HINT_X, 18, -1, "A SEL");
+        fw_textf(bmp, fw_font5, HINT_X, 12, -1, "B MAP");
+        fw_textf(bmp, fw_font5, HINT_X, 6, -1, "C W:%s", NAMES[wrap]);
+    }
     fw_textf(bmp, fw_font5, HINT_X, 0, -1, "D OFF");
     if (bypass)                             /* lit under OFF only (tag's box would reach below y 0) */
         fw_fillrect(bmp, HINT_X + 6, 0, HINT_X + 20, 6, -1);
@@ -1020,7 +1048,7 @@ void ks_draw(void *bmp, void *ctrl)
     fw_fillrect(bmp, 0, 0, 127, 63, 0);
 
     if (t == KEY_TRACK) {
-        if (bypass) {                       /* off: no keyboards or title bar, just the hints (OFF lit) and pages */
+        if (bypass) {                       /* off: no keyboards or title bar, just D's hint (OFF lit) and pages */
             draw_hints(bmp);
             draw_pages(bmp);
         } else {
@@ -1075,7 +1103,21 @@ void ks_draw(void *bmp, void *ctrl)
             hint = "C5 ON T9 = KEY 0";
         }
         fw_textf(bmp, fw_font5, 5, 18, -1, "%s", hint);
-        fw_textf(bmp, fw_font5, 5, 4, -1, "A/B: TURN OR PUSH  NO: CLOSE");
+        /* bottom row: a dot per track T1..T16 (gap after T8), filled where SCALE or TRANS is on,
+         * a pixel where both are off; this track is framed */
+        {
+            uint32_t on = scale_mask | xpose_mask;
+            int32_t i;
+            for (i = 0; i < 16; i++) {
+                int32_t x = 8 + i * 7 + (i >= 8 ? 4 : 0);
+                if (on & (1u << i))
+                    fw_fillrect(bmp, x, 5, x + 2, 7, 1);
+                else
+                    fw_fillrect(bmp, x + 1, 6, x + 1, 6, 1);
+                if (i == t)
+                    fw_framerect(bmp, x - 2, 3, x + 4, 9, 1);
+            }
+        }
     }
 }
 
