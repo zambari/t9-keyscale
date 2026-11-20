@@ -31,9 +31,10 @@
  * the audio track's (1/2, 1/4, 1/8 against 1x); it ignores T9's conditions (a failed condition still
  * moves the audio tracks for that one step; the MIDI targets follow the real fire).
  *
- * UI: FUNC + TRIG opens stock's Quantize first; FUNC + TRIG again (no other key between) opens the
- * overlay on the active track (stock gets that press too, to leave Quantize). FUNC + TRIG on the
- * overlay closes it and goes back to Quantize, so the two alternate.
+ * UI: FUNC + TRIG opens the overlay on the active track first (stock never sees that press);
+ * FUNC + TRIG on the overlay closes it and stock gets the press, so its Quantize opens. FUNC + TRIG
+ * in Quantize (no other key between) opens the overlay again (stock gets that press too, to leave
+ * Quantize), so the two alternate.
  *   on KEY_TRACK: the scale editor, two drawn keyboards running from the wrap note: IN (a remapped
  *                 note underlined, the line a pixel short at the end it leaves: the left for up, the
  *                 right for down; the selection inverted) above OUT (drawn like IN: white keys dark, black lit; an X where no input lands, a count on
@@ -617,17 +618,19 @@ int32_t ks_key(void *brain, void *ev)
         if (!down)
             return 0;                       /* the rest of a press stock had */
         if ((fl & FL_FUNC) || func_held) {
-            if (open_t >= 0) {              /* on ours: close it, stock's Quantize opens */
+            if (open_t >= 0) {              /* on ours: close it, stock gets it and opens Quantize */
                 close_overlay();
                 quant_open = 1;
-            } else if (!quant_open) {       /* the first press: stock's Quantize */
-                quant_open = 1;
-            } else {                        /* the second: ours, and stock gets it to leave Quantize */
-                quant_open = 0;
-                open_t = active();
-                set_page(0);
+                return 0;
             }
-            return 0;
+            open_t = active();
+            set_page(0);
+            if (quant_open) {               /* in Quantize: ours, and stock gets it to leave Quantize */
+                quant_open = 0;
+                return 0;
+            }
+            swallow_trig = 1;               /* the first press: ours only, stock never sees it */
+            return 1;
         }
         if (open_t >= 0) {
             swallow_trig = 1;
