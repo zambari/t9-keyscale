@@ -10,8 +10,7 @@ There's two screens added on Func+TRIG, before quantize, for all tracks. On Trac
 Notes on this track drive the transpose mechanism, and its panel controls the note remap.
 
 
-
-![The scale editor on device](docs/digitakt_scale.jpg)
+![The scale editor on device](docs/t9_scale.jpg)
 
 
 A remapped note is underlined; the line is a pixel short on the side it moves away
