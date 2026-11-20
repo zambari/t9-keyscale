@@ -1,10 +1,10 @@
 {
  "id": "t9-keyscale",
- "version": "0.12",
+ "version": "0.13",
  "title": "T9-KeyScale",
  "category": "Sequencer",
  "license": "GPL-2.0-or-later",
- "description": "Track 9 (first midi track) can be used to transpose other audio or midi tracks. \n\nPress Func+Trig to open a panel on any track to include or exclude it from processing. Press it on T9 to open scale remapping screen. \n\nIf you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can transpose your track or your outboard, while arbitrary scaling (not just presets or snaps) is applied to the result, to keep it harmonically fitting your material.\n\nA note every bar is enough to make progressions from short static rhythms.\n If you make your actual tracks short (a few notes) and control the pitch from T9, it works as an arp. Place trigs that will transpose notes on selected tracks (and outputted midi notes), to nerate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical.\n\nOpen it with FUNC + TRIG: the overlay opens on the active track.\n\nStock quantize still there, press Func+Trig again",
+ "description": "Track 9 (first midi track) can be used to transpose other audio or midi tracks. \n\nPress Func+Trig to open a panel on any track to include or exclude it from processing. Press it on T9 to open scale remapping screen. \n\nIf you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can transpose your track or your outboard, while arbitrary scaling (not just presets or snaps) is applied to the result, to keep it harmonically fitting your material.\n\nA note every bar is enough to make progressions from short static rhythms.\n If you make your actual tracks short (a few notes) and control the pitch from T9, it works as an arp. Place trigs that will transpose notes on selected tracks (and outputted midi notes), to generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical.\n\nOpen it with FUNC + TRIG: the overlay opens on the active track.\n\nStock quantize still there, press Func+Trig again",
  "device": "digitakt-mk1",
  "os": "1.54",
  "sources": ["t9-keyscale.c"],
