@@ -56,7 +56,8 @@
  *                 unlocked until power-off or until T9-KeyScale is turned off. A double tap ignores the locks. FUNC + YES is left to stock (quick save) on every screen. A strip on the right
  *                 shows the page between UP and DOWN arrows.
  *                 Page 3, the slots: four user slots U1-U4 and the presets CMAJ, GMIN (every other note a
- *                 semitone down onto the scale, wrap C), each a table and a wrap note. UP/DOWN pick one,
+ *                 semitone down onto the scale, wrap C) and INIT (every note to itself, wrap C: the reset),
+ *                 each a table and a wrap note. UP/DOWN pick one,
  *                 LEFT/RIGHT switch LOAD / SAVE, YES loads it into the live table or saves the live table
  *                 into it (not a preset), makes it the active slot and goes back to page 1. UP on the top
  *                 slot goes back to page 2. Loading the
@@ -431,13 +432,15 @@ static void edit_map(int32_t pc, int32_t out)
 
 /* ---- slots: four user slots and the presets, each a table and a wrap note ----------------------- */
 #define NSLOTS   4
-#define NPRESETS 2
+#define NPRESETS 3
 #define NALL     (NSLOTS + NPRESETS)
-static const char *const SLOT_NAMES[NALL] = {"U1", "U2", "U3", "U4", "CMAJ", "GMIN"};
+/* INIT is last so a saved active slot (cur) from before it keeps its index */
+static const char *const SLOT_NAMES[NALL] = {"U1", "U2", "U3", "U4", "CMAJ", "GMIN", "INIT"};
 /* every note outside the scale snapped a semitone down onto it; wrap C */
 static const uint8_t PRESETS[NPRESETS][12] = {
     {0, 0, 2, 2, 4, 5, 5, 7, 7, 9, 9, 11},  /* C major */
     {0, 0, 2, 3, 3, 5, 5, 7, 7, 9, 10, 10}, /* G minor: G A Bb C D Eb F */
+    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, /* INIT: every note to itself, the power-on table */
 };
 static uint8_t slots[NSLOTS][12], slot_wraps[NSLOTS];
 static uint8_t slot_used;                   /* bit s: user slot s holds a table */
@@ -899,9 +902,14 @@ static void draw_slots(void *bmp)
 {
     int32_t s, i;
     for (s = 0; s < NALL; s++) {
-        int32_t y = 45 - 7 * s;
+        int32_t y = 46 - 6 * s;             /* 7 rows, 46..10, clear of the status line at y 1 */
         const uint8_t *m = slot_map(s);
-        tag(bmp, 4, y, SLOT_NAMES[s], s == slot_sel);
+        int32_t n = 0;
+        while (SLOT_NAMES[s][n])
+            n++;
+        fw_textf(bmp, fw_font5, 4, y, -1, "%s", SLOT_NAMES[s]);
+        if (s == slot_sel)                  /* tag's box is 9 tall, too tall for a 6-pixel pitch */
+            fw_fillrect(bmp, 2, y - 1, 4 + 4 * n, y + 5, -1);
         if (s == cur)
             fw_fillrect(bmp, 0, y + 1, 1, y + 3, 1);
         if (!m) {

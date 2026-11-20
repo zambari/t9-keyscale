@@ -4,33 +4,26 @@ An [elekloader](https://elekloader.github.io/) mod for the **Digitakt mk1, OS 1.
 
 Track 9 (first midi track) can be used to transpose other audio or midi tracks. A global freely adjustable scale is also applied (both can be turned on and off per track). If you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can transpose your track or your outboard, while arbitrary scaling (not just presets or snaps) is applied to the result, to keep it harmonically fitting your material. A note every bar is enough to make progressions from short static rhythms. Can be used as an arp. Place trigs that will transpose notes on selected tracks (and outputted midi notes), with custom scales that can map any note to any note, so you can define where the notes should land, and generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical. 
 
- **T9 is the key track**. Its notes drive the key, and this is fixed,
-so plan your patterns around T9 not being a regular melodic track.
+There's two screens added on Func+TRIG, before quantize, for all tracks. On Track 9 it allows you to define arbitrary scaling behavior and save/load presets.
+
+## T9 is the key track
+Notes on this track drive the transpose mechanism, and its panel controls the note remap.
+
 
 
 ![The scale editor on device](docs/digitakt_scale.jpg)
 
 
+A remapped note is underlined; the line is a pixel short on the side it moves away
+from (left when it goes up, right when it goes down). OUT shows where the
+inputs land, with a count on notes that more than one input lands on; a note nothing lands on
+has an X. The dot marks the last note played through the scale.
 
-- **Key track:** T9's note trigs set a key. C5 means no change. Every other note transposes the
-  tracks you pick by its distance from C5, and the key holds until T9 plays its next note. T9's notes
-  still go out as usual: to keep T9 quiet, set its SRC channel to something nothing listens on.
-  **Muting T9 holds the key**: while it's muted, its trigs don't change the key.
-- **Scale remap:** a free 12-note table. Each input note C..B goes to any output note, so you can snap
-  to a scale, swap notes or fold a mode into another. It isn't limited to preset scales.
-- **Per track:** SCALE and TRANSPOSE can be turned on or off for each track. That covers the MIDI
-  tracks T10–T16 and the audio tracks T1–T8 (on an audio track the note moves the sample's pitch).
-
-
+On other tracks you get a panel that allows turning scaling and transpose sink for that track, so you toggle listening for pitch changes and note remapping individually per track, per pattern (stored as T9's CC values so safe for project)
 
 
 ![The scale editor](docs/apply-page.png)
 
-A remapped note is underlined; the line is a pixel short on the side it moves away
-from (left when it goes up, right when it goes down). OUT shows where the
-inputs land, with a count on notes that more than one input lands on; a note nothing lands on
-has an X. The selected note's output is inverted, and the arrow is the selected
-note's remap i.e. (B → A♯/B♭). The dot marks the last note played through the scale.
 
 
 ## Opening it
