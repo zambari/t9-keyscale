@@ -1,7 +1,10 @@
-# KeyScale: a key track and a free scale remap for the Digitakt mk1
+# T9-KeyScale: a key track and a free scale remap for the Digitakt mk1
 An [elekloader](https://elekloader.github.io/) mod for the **Digitakt mk1, OS 1.54**.
 
-Track 9 (first midi track) can be used to transpose other audio or midi tracks. A global freely adjustable scale is also aplied (both can be turned on and off per track). If you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can transpose your track or your outboard, while arbitrary scaling (not just presets or snaps) is applied to the result, to keep it harmonically fit your material. A note every bar is enough to make progressions from short static rhythms. Can be used as an arp. place trigs that will transpose notes on selected tracks (and outputted midi notes), with custom scales that can map any note to any note, so you can define where the notes should land, and generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical. 
+The name says the one rule you have to accept: **T9 is the key track**. Its notes drive the key, and this is fixed,
+so plan your patterns around T9 not being a regular melodic track.
+
+Track 9 (first midi track) can be used to transpose other audio or midi tracks. A global freely adjustable scale is also applied (both can be turned on and off per track). If you set your T9 to play at 1/8, 1/4, 1/2 time scale, you can transpose your track or your outboard, while arbitrary scaling (not just presets or snaps) is applied to the result, to keep it harmonically fit your material. A note every bar is enough to make progressions from short static rhythms. Can be used as an arp. place trigs that will transpose notes on selected tracks (and outputted midi notes), with custom scales that can map any note to any note, so you can define where the notes should land, and generate time synced automated permutations by using a familiar Elektron sequencer interface, while keeping the harmonic progression musical. 
 
 ![The scale editor on device](docs/digitakt_scale.jpg)
 
@@ -31,7 +34,7 @@ note's remap i.e. (B → A♯/B♭). The dot marks the last note played through 
 ## Opening it
 
 **FUNC + TRIG** opens stock **Quantize**, as usual. **Press FUNC + TRIG again** (with no other key in
-between) and KeyScale opens over it. Pressing FUNC + TRIG once more goes back to Quantize, so the two
+between) and T9-KeyScale opens over it. Pressing FUNC + TRIG once more goes back to Quantize, so the two
 alternate. **NO** closes it, and any other key closes it and then does its usual job.
 
 What opens depends on the active track:
@@ -52,10 +55,10 @@ The top row is the two switches, then the track: `SCALE [ON] TRANS [OFF]   T10`.
 | knob **A** (page 1) | move the selection |
 | knob **B** (page 1) | the output of the selected note (pick the note with **A**, the trig keys or LEFT/RIGHT) |
 | knob **C** (page 1) | move the wrap note |
-| knob **D** (page 1) | turn KeyScale **off** for all tracks (a bypass). The keyboards and title bar disappear, leaving the knob hints (with **OFF** lit) and the page strip; turn **D** right (on any page) to switch it back on |
+| knob **D** (page 1) | turn T9-KeyScale **off** for all tracks (a bypass). The keyboards and title bar disappear, leaving the knob hints (with **OFF** lit) and the page strip; turn **D** right (on any page) to switch it back on |
 | knobs **E–H** (page 1) | the output note of the last four keys (**G♯, A, A♯, B** with wrap C). A knob's first turn only selects its note, so a stray touch doesn't edit; keep turning to change it |
 | **DOWN** (or **TRIG**) / **UP** | the next / previous of three pages. Page 2: knobs **A–H** for the first eight keys (**C, C♯, D, D♯, E, F, F♯, G** with wrap C). Page 3: the slots (below) |
-| knob **push** | **unlock** a note for editing. Every note starts locked at power-on (knob **B**, the value under the cursor, is never locked); editing a locked one (with its own knob or the trig keys) shows `PRESS TO UNLOCK` at the left of the title bar instead. Push the note's own knob (this also selects it), or push **B** for the selected note. Notes stay unlocked until power-off, or until KeyScale is turned off with **D** (that locks them all again). A double tap still resets a locked note |
+| knob **push** | **unlock** a note for editing. Every note starts locked at power-on (knob **B**, the value under the cursor, is never locked); editing a locked one (with its own knob or the trig keys) shows `PRESS TO UNLOCK` at the left of the title bar instead. Push the note's own knob (this also selects it), or push **B** for the selected note. Notes stay unlocked until power-off, or until T9-KeyScale is turned off with **D** (that locks them all again). A double tap still resets a locked note |
 | trig keys | a keyboard in FUNC + TRK's layout (9–15 white keys, 2 3 5 6 7 black). **Hold a source note and press its new output** to set it. A tap only selects; a **double tap** resets that note to itself |
 | **LEFT / RIGHT** | move the selection |
 | **YES** | close the overlay, like NO (on page 3 it loads or saves the slot instead). FUNC + YES is left to stock's quick save |
@@ -77,7 +80,7 @@ a dot for one nothing lands on. The wrap note is shown after the cells.
 | **LEFT / RIGHT** | switch between **LOAD** and **SAVE** |
 | **YES** | load the slot into the live table, or save the live table into it (user slots only). The slot becomes the active one, and the editor goes back to page 1 |
 
-While KeyScale is off, every track plays its notes untouched, whatever its SCALE and TRANSPOSE
+While T9-KeyScale is off, every track plays its notes untouched, whatever its SCALE and TRANSPOSE
 switches say (the apply screens show `ALL OFF`). T9 still sets the key, so the key is right the
 moment you switch it back on.
 

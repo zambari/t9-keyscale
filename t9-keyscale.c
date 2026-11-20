@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* KeyScale for the Digitakt mk1 (OS 1.54, core 4.1, seq-events 0.1).
+/* T9-KeyScale for the Digitakt mk1 (OS 1.54, core 4.1, seq-events 0.1).
  *
  * The key track (KEY_TRACK, T9 = seq track 8) sets the key: offset = its note - 60 (C5). Its note
  * trigs are read in ev_fire_notes and still played (KEY_SILENT 0): silence T9 with its SRC channel.
@@ -45,14 +45,14 @@
  *                 only selects, a double tap resets that note to itself. LEFT/RIGHT move the selection; YES closes the
  *                 overlay, like NO. The note knobs follow the drawn order (from the wrap note; C..B by
  *                 default). Page 1: A moves the selection, B sets the selected note's output, C rotates the
- *                 wrap note, D turns KeyScale off (hinted right of OUT), E-H set the outputs of the last
+ *                 wrap note, D turns T9-KeyScale off (hinted right of OUT), E-H set the outputs of the last
  *                 four keys (G#..B) (bypass: the keyboards and title bar go, leaving only D's hint, OFF lit, and the pages; going off locks every note again; D on any page turns it
  *                 back on, UP/DOWN/TRIG still flip pages, nothing else does anything). DOWN (or TRIG without FUNC) steps to the next page, UP to the one before, of three: page 2 is
  *                 A-H for the first eight keys (C..G). A knob's first turn only selects its note, unless it is already selected.
  *                 Every note starts locked at power-on: an edit of a locked note's output (its own knob or
  *                 a trig-key pair; B, the cursor's value, is never locked) does nothing and shows PRESS TO UNLOCK at the left of the title bar (over the slot name) for 40 UI ticks. Pushing
  *                 a note's knob unlocks (and selects) it, pushing B unlocks the selected note; it stays
- *                 unlocked until power-off or until KeyScale is turned off. A double tap ignores the locks. FUNC + YES is left to stock (quick save) on every screen. A strip on the right
+ *                 unlocked until power-off or until T9-KeyScale is turned off. A double tap ignores the locks. FUNC + YES is left to stock (quick save) on every screen. A strip on the right
  *                 shows the page between UP and DOWN arrows.
  *                 Page 3, the slots: four user slots U1-U4 and the presets CMAJ, GMIN (every other note a
  *                 semitone down onto the scale, wrap C), each a table and a wrap note. UP/DOWN pick one,
@@ -927,7 +927,7 @@ static void draw_slots(void *bmp)
                  SLOT_NAMES[slot_sel]);
 }
 
-/* Page 1's utility knobs, right of OUT. While KeyScale is off only D's OFF shows, lit: the others do nothing then. */
+/* Page 1's utility knobs, right of OUT. While T9-KeyScale is off only D's OFF shows, lit: the others do nothing then. */
 static void draw_hints(void *bmp)
 {
     if (!bypass) {
@@ -1082,40 +1082,40 @@ void ks_draw(void *bmp, void *ctrl)
 
         /* the key track's status, and what to check when the key isn't moving */
         if (bypass) {
-            fw_textf(bmp, fw_font5, 5, 27, -1, "ALL OFF: NOTHING IS MOVED");
+            fw_textf(bmp, fw_font5, 5, 29, -1, "ALL OFF: NOTHING IS MOVED");
             hint = "T9 OVERLAY, D: BACK ON";
         } else if (!PLAYING()) {
-            fw_textf(bmp, fw_font5, 5, 27, -1, "STOPPED  KEY 0");
+            fw_textf(bmp, fw_font5, 5, 29, -1, "STOPPED  KEY 0");
             hint = "PLAY: T9 NOTES SET THE KEY";
         } else if (key_muted()) {
-            fw_textf(bmp, fw_font5, 5, 27, -1, "T9 MUTED  HLD %s%d", off > 0 ? "+" : "", (int)off);
+            fw_textf(bmp, fw_font5, 5, 29, -1, "T9 MUTED  HLD %s%d", off > 0 ? "+" : "", (int)off);
             hint = "UNMUTE T9 TO FOLLOW IT";
         } else if (!key_got) {
-            fw_textf(bmp, fw_font5, 5, 27, -1, "NO NOTES FROM T9");
+            fw_textf(bmp, fw_font5, 5, 29, -1, "NO NOTES FROM T9");
             hint = "ADD NOTE TRIGS ON T9";
         } else {
             int32_t k = key_note;
-            fw_framerect(bmp, 5, 27, 7, 29, 1);              /* flashes on each T9 note */
+            fw_framerect(bmp, 5, 29, 7, 31, 1);              /* flashes on each T9 note */
             if (key_fresh > 0)
-                fw_fillrect(bmp, 5, 27, 7, 29, 1);
-            fw_textf(bmp, fw_font5, 11, 27, -1, "T9 %s%d  KEY %s%d", NAMES[k % 12], (int)(k / 12),
+                fw_fillrect(bmp, 5, 29, 7, 31, 1);
+            fw_textf(bmp, fw_font5, 11, 29, -1, "T9 %s%d  KEY %s%d", NAMES[k % 12], (int)(k / 12),
                      off > 0 ? "+" : "", (int)off);
             hint = "C5 ON T9 = KEY 0";
         }
-        fw_textf(bmp, fw_font5, 5, 18, -1, "%s", hint);
-        /* bottom row: a dot per track T1..T16 (gap after T8), filled where SCALE or TRANS is on,
-         * a pixel where both are off; this track is framed */
+        fw_textf(bmp, fw_font5, 5, 20, -1, "%s", hint);
+        /* bottom: a dot per track in two rows of 8 like the trig keys (T1..T8 above, T9..T16 below),
+         * filled where SCALE or TRANS is on, a pixel where both are off; this track is framed */
         {
             uint32_t on = scale_mask | xpose_mask;
             int32_t i;
             for (i = 0; i < 16; i++) {
-                int32_t x = 8 + i * 7 + (i >= 8 ? 4 : 0);
+                int32_t x = 13 + (i & 7) * 14, y = i < 8 ? 13 : 5;
                 if (on & (1u << i))
-                    fw_fillrect(bmp, x, 5, x + 2, 7, 1);
+                    fw_fillrect(bmp, x, y, x + 2, y + 2, 1);
                 else
-                    fw_fillrect(bmp, x + 1, 6, x + 1, 6, 1);
+                    fw_fillrect(bmp, x + 1, y + 1, x + 1, y + 1, 1);
                 if (i == t)
-                    fw_framerect(bmp, x - 2, 3, x + 4, 9, 1);
+                    fw_framerect(bmp, x - 2, y - 2, x + 4, y + 4, 1);
             }
         }
     }

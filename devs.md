@@ -29,8 +29,8 @@ Needs [elekloader](https://github.com/elekloader/elekloader) and an m68k cross G
 docs). Requires **core ≥ 4.1** and **seq-events** (the DT1 one).
 
 ```bash
-python3 -m elekloader.sdk.build path/to/keyscale --stock Digitakt_OS1.54.syx
-# -> path/to/keyscale/out/keyscale-<ver>.elemod
+python3 -m elekloader.sdk.build path/to/t9-keyscale --stock Digitakt_OS1.54.syx
+# -> path/to/t9-keyscale/out/t9-keyscale-<ver>.elemod
 ```
 
 Load the `.elemod` into the [elekloader builder](https://elekloader.github.io/elekloader/) together with
@@ -40,8 +40,8 @@ core and seq-events, or link locally:
 python3 -m elekloader.patch --stock Digitakt_OS1.54.syx \
     --mod mods/core/out/core-4.4-os1.54.elemod \
     --mod mods/seq-events-dt1/out/seq-events-0.1-os1.54.elemod \
-    --mod path/to/keyscale/out/keyscale-<ver>.elemod \
-    --out keyscale.syx --version 1.5K
+    --mod path/to/t9-keyscale/out/t9-keyscale-<ver>.elemod \
+    --out t9-keyscale.syx --version 1.5K
 ```
 
 The README screenshots are digiemu `--check` snapshots of a build with `-DSHOT=1` (scale editor;
@@ -57,7 +57,7 @@ No firmware is in this repo: not the stock OS, and not built `.syx` or `.elemod`
 | knob **A** (page 1) | move the selection |
 | knob **B** (page 1) | the output of the selected note (pick the note with **A**, the trig keys or LEFT/RIGHT) |
 | knob **C** (page 1) | move the wrap note |
-| knob **D** (page 1) | turn KeyScale **off** for all tracks (a bypass). The editor stays, drawn inverted, with its hints and pages; turn **D** up (on any page) to switch it back on |
+| knob **D** (page 1) | turn T9-KeyScale **off** for all tracks (a bypass). The editor stays, drawn inverted, with its hints and pages; turn **D** up (on any page) to switch it back on |
 | knobs **E–H** (page 1) | the output note of the last four keys (**G♯, A, A♯, B** with wrap C). A knob's first turn only selects its note, so a stray touch doesn't edit; keep turning to change it |
 | **DOWN** (or **TRIG**) / **UP** | the next / previous of three pages. Page 2: knobs **A–H** for the first eight keys (**C, C♯, D, D♯, E, F, F♯, G** with wrap C). Page 3: the slots (below) |
 | knob **push** | **unlock** a note for editing. Every note starts locked at power-on; editing a locked one (with its knob, **B** or the trig keys) shows `LOCKED` in the title bar instead. Push the note's own knob (this also selects it), or push **B** for the selected note. Notes stay unlocked until power-off. YES and a double tap still reset locked notes |
@@ -74,10 +74,10 @@ C, and D → C goes down to the C below.
 
 ## Firmware findings (DT1 OS 1.54)
 
-What KeyScale needed to know about the Digitakt mk1's RAM, written down for other mod authors. **Every address
+What T9-KeyScale needed to know about the Digitakt mk1's RAM, written down for other mod authors. **Every address
 and offset is for OS 1.54 only** and is likely to move in any other OS version. "Seen" means found in digiemu by
 diffing the pattern and kit in RAM before and after one edit at a time (a small probe mod, `patdiff`, not part of
-this repo). "Disasm" means read from the 1.54 code. "Assumed" means used by KeyScale but not proven.
+this repo). "Disasm" means read from the 1.54 code. "Assumed" means used by T9-KeyScale but not proven.
 
 ### Global addresses
 
@@ -121,7 +121,7 @@ A MIDI track's parameters are 16-bit words, **`0x70` bytes per MIDI track** (T9 
 | `0x5e4..0x5ea` | AMP page E–H: the CC5–CC8 values |
 
 - A CC number is stored as number + `0x20` (CC9 is `0x29`).
-- KeyScale assumes a 7-bit CC value is the word's high byte (the byte at the even address). That's not confirmed
+- T9-KeyScale assumes a 7-bit CC value is the word's high byte (the byte at the even address). That's not confirmed
   yet, and neither is that a fresh pattern's values read 0.
 - A byte at `0x609` looked like a bitmask that enables each message type, but it behaved erratically.
 - Unknown: how "--" (no CC number) is encoded.
@@ -151,5 +151,5 @@ Mutes live outside the pattern, so a pattern diff never sees them.
 ### eMMC
 
 On a fresh digiemu `plusdrive.img`, `0x60000..0x6005f` is all zero. FLEXMODS uses blocks `0x60040..0x6004c`, and
-KeyScale uses `0x6004e`. That only shows the blocks are empty on a fresh drive, not that the stock OS never
+T9-KeyScale uses `0x6004e`. That only shows the blocks are empty on a fresh drive, not that the stock OS never
 writes them.
