@@ -1,4 +1,4 @@
-# T9-KeyScale: a key track and a free scale remap for the Digitakt mk1
+# T9-KeyScale: scale following note controlled multi track transpose
 An [elekloader](https://elekloader.github.io/) mod for the **Digitakt mk1, OS 1.54**.
 
 
