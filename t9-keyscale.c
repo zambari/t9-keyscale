@@ -1135,8 +1135,8 @@ void ks_draw(void *bmp, void *ctrl)
 /* ---- saving ------------------------------------------------------------------------------------- */
 #ifdef SAVE_BLOCK
 typedef int32_t (*emmc_fn)(int32_t block, int32_t bytes, void *buf);
-#define EMMC_READ  ((emmc_fn)0x400e2c14)    /* 1.54, from FLEXMODS */
-#define EMMC_WRITE ((emmc_fn)0x400e2dfa)
+#define EMMC_READ  ((emmc_fn)EMMC_READ_AT)  /* per OS, from mod.json cflags (1.54's from FLEXMODS) */
+#define EMMC_WRITE ((emmc_fn)EMMC_WRITE_AT)
 #define MAGIC 0x4b53434cu                   /* "KSCL" */
 /* wrap came in 0.3, after the 0.2 fields with its own check (wrap ^ 0x5a), so a 0.2 save still loads;
  * bypass likewise in 0.6 (bypass ^ 0xa5; an older save reads as on) */
@@ -1229,7 +1229,7 @@ static void save(void)
 #ifdef SHOT
 /* Screenshot builds for the README (cflags -DSHOT=1 or 2, never shipped): the overlay opens at boot with
  * a G minor remap, every note snapped down onto G A Bb C D Eb F (so the white keys play G minor), B > A#
- * selected. SHOT 1: the scale editor; SHOT 2: T10's apply screen. */
+ * selected. SHOT 1: the scale editor; SHOT 2: T10's apply screen; SHOT 3: SHOT 1 with D# > G selected. */
 static void shot_setup(void)
 {
     static const uint8_t GMIN[12] = {0, 0, 2, 3, 3, 5, 5, 7, 7, 9, 10, 10};
@@ -1249,7 +1249,13 @@ static void shot_setup(void)
     last_ds[9] = -1;
     last_fx[9] = FX_SCALE;
     last_n[9] = 1;
-    open_t = SHOT == 1 ? KEY_TRACK : 9;
+#if SHOT == 3
+    map[3] = 7;                             /* SHOT 3 (shop picture): G minor, then D# sent up to G */
+    sel = 3;
+    heard_pc = 3;
+    heard_out = 7;
+#endif
+    open_t = SHOT == 2 ? 9 : KEY_TRACK;
 }
 #endif
 

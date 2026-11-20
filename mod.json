@@ -13,7 +13,9 @@
   "-DPATTERN_PP=0x4199ec38",
   "-DTRANSPORT_AT=0x4199ec2c",
   "-DSAVE_BLOCK=0x6004e",
-  "-DMUTES_PP=0x421fab90"
+  "-DMUTES_PP=0x421fab90",
+  "-DEMMC_READ_AT=0x400e2c14",
+  "-DEMMC_WRITE_AT=0x400e2dfa"
  ],
  "subscribe": [
   {"event": "ev_fire_step", "fn": "ks_step", "order": 50},

@@ -153,3 +153,22 @@ Mutes live outside the pattern, so a pattern diff never sees them.
 On a fresh digiemu `plusdrive.img`, `0x60000..0x6005f` is all zero. FLEXMODS uses blocks `0x60040..0x6004c`, and
 T9-KeyScale uses `0x6004e`. That only shows the blocks are empty on a fresh drive, not that the stock OS never
 writes them.
+
+## OS 1.53 port (for the shop; open, blocked on the stock file)
+
+The shop takes one `.elemod` per OS. 1.54-only is accepted (FLEXMODS and others are listed that way),
+but most DT1 mods also ship 1.53. Elektron's site only serves 1.54 now, so 1.53 needs
+`Digitakt_OS1.53.syx` (sha256 9bdd44bb...29bcc92) dropped into the project root. Then add
+`"ports": {"1.53": {"cflags": [...]}}` to mod.json with the whole cflags list (a port replaces the key whole):
+
+| define | 1.54 | 1.53 | how |
+|---|---|---|---|
+| PATTERN_PP | 0x4199ec38 | 0x4199dc38 | confirmed: seq-events-dt1 `SQ_PATTERN_PP` |
+| TRANSPORT_AT | 0x4199ec2c | 0x4199dc2c | confirmed: seq-events-dt1 `SQ_TRANSPORT` |
+| MUTES_PP | 0x421fab90 | 0x421f9b90? | guess (RAM past the image moved 0x1000); verify by finding the CC 94 handler's load in 1.53 |
+| EMMC_READ_AT | 0x400e2c14 | ? | find the 1.54 routine's bytes (absolute addresses masked) in the 1.53 image |
+| EMMC_WRITE_AT | 0x400e2dfa | ? | same |
+| SAVE_BLOCK | 0x6004e | 0x6004e | an eMMC block, not an address |
+
+`build-t9-keyscale.sh` then builds, lints and links 1.53 by itself (`t9-keyscale-<v>-os1.53.elemod`,
+`build/t9-keyscale-os1.53.syx`); run the digiemu check on it (digiemu's own baseline is 1.53).
